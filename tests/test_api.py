@@ -109,3 +109,38 @@ def test_predict_batch_invalid_element():
     assert response.status_code == 400
     assert "index 1" in response.json()["detail"] or "l'index 1" in response.json()["detail"]
 
+
+def test_predict_batch_metrics_increments(monkeypatch):
+    monkeypatch.setattr(api_app, "model", DummyModel())
+    monkeypatch.setattr(
+        api_app,
+        "feature_columns",
+        [
+            "tenure_months",
+            "monthly_charges",
+            "total_charges",
+            "contract_One year",
+            "contract_Two year",
+        ],
+    )
+
+    # Get initial values
+    initial_metrics = client.get("/metrics").json()
+    init_requests = initial_metrics.get("n_batch_requests", 0)
+    init_inputs = initial_metrics.get("n_batch_inputs_total", 0)
+
+    # Perform batch prediction request
+    payload = {
+        "inputs": [
+            {"tenure_months": 12, "monthly_charges": 75.5, "total_charges": 906.0, "contract": "Month-to-month"},
+            {"tenure_months": 24, "monthly_charges": 90.0, "total_charges": 2160.0, "contract": "One year"}
+        ]
+    }
+    client.post("/predict_batch", json=payload)
+
+    # Verify metrics incremented correctly
+    new_metrics = client.get("/metrics").json()
+    assert new_metrics["n_batch_requests"] == init_requests + 1
+    assert new_metrics["n_batch_inputs_total"] == init_inputs + 2
+
+

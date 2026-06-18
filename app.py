@@ -19,6 +19,8 @@ FEATURE_COLUMNS_PATH = Path("artifacts/feature_columns.json")
 metrics = {
     "n_predictions": 0,
     "n_errors": 0,
+    "n_batch_requests": 0,
+    "n_batch_inputs_total": 0,
 }
 
 # Configuration du logging
@@ -131,11 +133,15 @@ def predict(payload: CustomerInput):
 def predict_batch(payload: BatchInput):
     """Effectue des prédictions de churn par lot (batch) de taille max 100."""
     start_time = time.time()
-    logger.info("Requête de prédiction batch reçue : %d éléments", len(payload.inputs))
+    metrics["n_batch_requests"] += 1
+    
+    # Logging du volume traité à chaque appel (niveau INFO)
+    logger.info("Volume de batch traité : %d éléments reçus pour prédiction", len(payload.inputs))
 
     # Limitation stricte de la taille du batch (max 100 éléments) - HTTP 413
     if len(payload.inputs) > 100:
-        logger.warning("Requête batch rejetée : %d éléments dépasse la taille limite (100)", len(payload.inputs))
+        # Logging des batchs rejetés pour cause de taille avec un niveau WARNING
+        logger.warning("Requête batch rejetée : %d éléments dépasse la taille limite autorisée (100)", len(payload.inputs))
         raise HTTPException(
             status_code=413,
             detail="Le batch dépasse la taille maximale autorisée (100 éléments)."
@@ -162,6 +168,8 @@ def predict_batch(payload: BatchInput):
 
     try:
         predictions = []
+        # Mise à jour du compteur cumulé d'éléments traités
+        metrics["n_batch_inputs_total"] += len(validated_inputs)
         # Inférence séquentielle pour chaque client validé
         for input_item in validated_inputs:
             df = pd.DataFrame([input_item.model_dump()])
