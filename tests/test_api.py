@@ -55,7 +55,19 @@ def test_predict_rejects_missing_field():
 
 
 def test_predict_batch_valid(monkeypatch):
-    monkeypatch.setattr(api_app, "model", DummyModel())
+    class DummyOrderedModel:
+        def predict(self, X):
+            # Si tenure_months == 12, retourne [1] (churn), sinon [0] (no_churn)
+            if "tenure_months" in X.columns and X["tenure_months"].iloc[0] == 12:
+                return [1]
+            return [0]
+
+        def predict_proba(self, X):
+            if "tenure_months" in X.columns and X["tenure_months"].iloc[0] == 12:
+                return np.array([[0.1, 0.9]])
+            return np.array([[0.8, 0.2]])
+
+    monkeypatch.setattr(api_app, "model", DummyOrderedModel())
     monkeypatch.setattr(
         api_app,
         "feature_columns",
@@ -80,9 +92,15 @@ def test_predict_batch_valid(monkeypatch):
     data = response.json()
     assert data["n_inputs"] == 2
     assert len(data["predictions"]) == 2
-    assert data["predictions"][0]["prediction"] == 0
-    assert "label" in data["predictions"][0]
-    assert "confidence" in data["predictions"][0]
+    
+    # Vérifie que la première prédiction correspond à l'entrée avec tenure_months=12 (churn)
+    assert data["predictions"][0]["prediction"] == 1
+    assert data["predictions"][0]["label"] == "churn"
+    
+    # Vérifie que la deuxième prédiction correspond à l'entrée avec tenure_months=24 (no_churn)
+    assert data["predictions"][1]["prediction"] == 0
+    assert data["predictions"][1]["label"] == "no_churn"
+
 
 
 def test_predict_batch_exceeds_limit():
