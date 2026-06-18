@@ -35,3 +35,13 @@ Il faudrait utiliser un gestionnaire de données comme DVC.
 **Criticité** : HAUTE
 **Justification** : Il n'y a pas de moyen de visualiser les métriques. Elles sont d'ailleurs très limitées (uniquement pour le nombre d'erreurs et de prédictions) et ne permettent donc pas de savoir par exemple si le modèle commence à dériver ou si la qualité de ses prédictions diminue. 
 Il faudrait mettre en place des métriques plus complètes et les logger.
+
+
+
+## Défaut 6 - Logs insuffisants
+**Localisation** : app.py  
+**Description** : dans le pipeline d'entrainement il n'y a aucun log pour suivre la progression ou le temps d'exécution des étapes.
+Dans l'API, les logs d'inférence se limitent à prediction=.... 
+**Criticité** : MOYENNE
+**Justification** : En l'absence des logs, il est difficile de savoir, si le pipeline s'est déroulé normalement, si des erreurs se sont produites et lesquelles, etc, ce qui augmenterait considérablement le temps de debuggage en cas de problème.
+Il faudrait mettre en place des logs plus complets et les logger.
