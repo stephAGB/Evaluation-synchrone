@@ -17,7 +17,7 @@ Il faudrait ajouter des commentaires pour clarifier les intentions de l'auteur e
 
 ## Défaut 3 - .gitignore incomplet
 **Localisation** : .gitignore
-**Description** : Le fichier .gitignore n'est pas complet. Il ne prend pas en compte tous les fichiers qui devraient être ignorés.
+**Description** : Le fichier .gitignore n'est pas complet. Il prend en compte  le dossier qui devraient être ignorés.
 **Criticité** : HAUTE
 **Justification** : Le dossier data n'est pas ignoré, ce qui pourrait exposer des informations sensibles. De plus ajouter les données dans git n'est pas une bonne pratique car les fichiers de données peuvent être trop lourds. 
 Il faudrait utiliser un gestionnaire de données comme DVC.

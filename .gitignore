@@ -4,3 +4,7 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 mlruns/
+artifacts/model.pkl
+artifacts/metrics.json
+artifacts/feature_columns.json
+mlflow.db*
