@@ -15,6 +15,7 @@ TEST_SIZE = 0.2
 
 
 def run_pipeline():
+    mlflow.set_tracking_uri("sqlite:///mlflow.db")
     mlflow.set_experiment("churn_eval")
 
     with mlflow.start_run(run_name="baseline_rf"):
@@ -45,7 +46,7 @@ def run_pipeline():
         mlflow.log_artifact(paths["model_path"])
         mlflow.log_artifact(paths["metrics_path"])
         mlflow.log_artifact(paths["columns_path"])
-        mlflow.sklearn.log_model(model, name="model")
+        mlflow.sklearn.log_model(model, name="model", registered_model_name="churn_model_eval_synchrone")
 
     return metrics
 
