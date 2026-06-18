@@ -37,11 +37,10 @@ Il faudrait utiliser un gestionnaire de données comme DVC.
 Il faudrait mettre en place des métriques plus complètes et les logger.
 
 
-
 ## Défaut 6 - Logs insuffisants
 **Localisation** : app.py  
 **Description** : dans le pipeline d'entrainement il n'y a aucun log pour suivre la progression ou le temps d'exécution des étapes.
 Dans l'API, les logs d'inférence se limitent à prediction=.... 
 **Criticité** : MOYENNE
 **Justification** : En l'absence des logs, il est difficile de savoir, si le pipeline s'est déroulé normalement, si des erreurs se sont produites et lesquelles, etc, ce qui augmenterait considérablement le temps de debuggage en cas de problème.
-Il faudrait mettre en place des logs plus complets et les logger.
+Il faudrait mettre en place des logs plus complets.
