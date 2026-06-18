@@ -44,3 +44,9 @@ Dans l'API, les logs d'inférence se limitent à prediction=....
 **Criticité** : MOYENNE
 **Justification** : En l'absence des logs, il est difficile de savoir, si le pipeline s'est déroulé normalement, si des erreurs se sont produites et lesquelles, etc, ce qui augmenterait considérablement le temps de debuggage en cas de problème.
 Il faudrait mettre en place des logs plus complets.
+
+## Défaut 7 — Entraînement du modèle lors des tests de non-régression
+**Localisation** : tests/test_non_regression.py, lignes 11-34
+**Description** : Les tests de non-régression entraînent le modèle à chaque exécution.
+**Criticité** : MOYENNE
+**Justification** : Ré-entraîner le modèle au cours des tests unitaires ou de non-régression ralentit la boucle de rétroaction (CI/CD) sur de vrais projets, crée une dépendance étroite et inutile vis-à-vis des données d'entraînement d'origine, et peut introduire de l'instabilité (non-déterminisme). Un test de non-régression MLOps robuste doit charger le modèle déjà entraîné (l'artefact candidat à la production) et l'évaluer sur un jeu de données de test de référence.
